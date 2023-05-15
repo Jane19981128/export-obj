@@ -1,0 +1,5 @@
+/node_modules
+input/gltf/
+input/new-gltf/
+output/
+assimp/
