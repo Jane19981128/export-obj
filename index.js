@@ -1,25 +1,26 @@
 const fs = require('fs-extra');
 const path = require('path');
-const { inputPath, outputPath} = require('./src/constant');
+const { outputPath } = require('./src/constant');
 const { exportModle } = require('./src/child_process');
 
-const inputGLTFPath = inputPath + 'house.gltf';
-const basename = path.basename(inputGLTFPath, '.gltf');
+const input = process.argv.at(-2);
+const basename = path.basename(input);
 
 (async () => {
-    const gltf = await fs.readFile( inputGLTFPath, {encoding: 'utf-8'});
+    const gltf = await fs.readFile(input, { encoding: 'utf-8' });
 
     const json = JSON.parse(gltf);
-    
     json.nodes.forEach(element => {
         if (element.matrix) {
-            element.matrix = element.matrix.map(i => Number(i)); 
-          }
+            element.matrix = element.matrix.map(i => Number(i));
+        }
     });
-    
-    const outputGLTFPath = outputPath + basename + '.gltf';
+
+    const outputGLTFPath = outputPath + basename;
+    if (await fs.ensureFile(outputGLTFPath))
+        await fs.unlink(outputGLTFPath);
     await fs.writeFile(outputGLTFPath, JSON.stringify(json, null, 2));
-    
-    exportModle();
-    
+
+    await exportModle();
+    process.exit(1)
 })();
