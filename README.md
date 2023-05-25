@@ -1,1 +1,2 @@
 # export-obj
+该项目将gltf格式的3d模型转换成带有纹理贴图和mtl文件的obj模型
