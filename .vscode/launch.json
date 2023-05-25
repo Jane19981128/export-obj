@@ -12,8 +12,8 @@
                 "<node_internals>/**"
             ],
             "args": [
-                "./input/gltf/518-2.gltf",
-                "./output/518-2/518-2.obj"
+                "./input/gltf/newhouse524-3.gltf",
+                "./output/newhouse524-3/newhouse524-3.obj"
             ],
             "program": "${workspaceFolder}\\index.js"
         }

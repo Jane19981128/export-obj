@@ -80,7 +80,7 @@ function removeRepeatImage() {
 				reject('readdir error' + error);
 			}
 			data.forEach(item => {
-				if (item.includes('.jpg')) {
+				if (item.includes('.jpg')|| item.includes('.png')) {
 					const imagePath = path.join(outputDir, item);
 					dirList.push(imagePath);
 				}
@@ -110,6 +110,7 @@ function removeRepeatImage() {
 				dirList = dirList.slice(0, j + 1).concat(tempList);
 			};
 
+			
 			resolve('remove finished');
 		})
 	})
@@ -119,7 +120,7 @@ function removeRepeatImage() {
 function getImgNum(str) {
 	const flag = '_img';
 	const numStart = str.indexOf(flag) + flag.length;
-	const numEnd = str.indexOf('.jpg');
+	const numEnd = str.indexOf(path.extname(str));
 	const imgNum = str.slice(numStart, numEnd);
 	return imgNum;
 }

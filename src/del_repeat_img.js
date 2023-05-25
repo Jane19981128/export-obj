@@ -39,7 +39,6 @@ async function compareImageHash(imagePath1, imagePath2) {
 	const hash1 = await generateSHA256(imagePath1);
 	const hash2 = await generateSHA256(imagePath2);
 
-	console.log(hash1, hash2)
 	return hash1 === hash2
 }
 
