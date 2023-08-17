@@ -3,17 +3,51 @@ const path = require('path');
 const fs = require('fs-extra');
 var readline = require('readline');
 
-const { ifSameImage } = require('./del_repeat_img')
+const { ifSameImage } = require('./del_repeat_img');
 const { assimpexePath, SUCCESS_STR } = require('./constant');
 
+const flag = process.argv.at(-1);
+let input = process.argv.at(-2);
+let output = process.argv.at(-1);
+if (flag === 'no-image') {
+	input = process.argv.at(-3);
+	output = process.argv.at(-2);
+}
 
 const { outputPath } = require('./constant');
-const input = outputPath + path.basename(process.argv.at(-2))
-const output = process.argv.at(-1);
+input = outputPath + path.basename(input);
 const outputDir = path.dirname(output);
+
+console.log(input, output);
 
 //重复图片对应关系
 const imgFlagMap = new Map();
+
+// async function exportPLY(){
+// 	console.log(input, output)
+// 	await fs.remove(outputDir);
+// 	await fs.ensureDir(outputDir);
+// 	return new Promise((resolve, reject) => {
+// 		const cmd = `export ${input} ${output}`;
+// 		// const cmd = `export ./output/530all-unitM-3/530all-unitM-3.obj ${output} --format=binary_little_endian 1.0`;
+
+// 		const client = cp.spawn(assimpexePath, cmd.split(' '));
+
+// 		client.stdout.on('data', (data) => {
+// 			console.log(data.toString());
+// 		});
+
+// 		client.stderr.on('data', (err) => {
+// 			console.log('extract model error' + err.toString());
+// 			reject(err.toString())
+// 		});
+
+// 		client.on('close', (res) => {
+// 			console.log('extract model end');
+// 			resolve(SUCCESS_STR);
+// 		})
+// 	})
+// }
 
 async function exportModle() {
 	await fs.remove(outputDir);
@@ -23,8 +57,14 @@ async function exportModle() {
 	if (res1 == SUCCESS_STR && res2 == SUCCESS_STR) {
 		// await SimplifyModle(output)
 		await removeRepeatImage();
-		await convertMTL()
+		await convertMTL();
 	}
+}
+
+async function exportNoImageModle() {
+	await fs.remove(outputDir);
+	await fs.ensureDir(outputDir);
+	await exportOBJModle();
 }
 
 async function exportOBJModle() {
@@ -40,14 +80,14 @@ async function exportOBJModle() {
 
 		client.stderr.on('data', (err) => {
 			console.log('extract model error' + err.toString());
-			reject(err.toString())
+			reject(err.toString());
 		});
 
 		client.on('close', (res) => {
 			console.log('extract model end');
 			resolve(SUCCESS_STR);
-		})
-	})
+		});
+	});
 }
 
 function extractImage() {
@@ -58,18 +98,18 @@ function extractImage() {
 		const clientImage = cp.spawn(assimpexePath, cmd.split(' '));
 
 		clientImage.stdout.on('data', (data) => {
-			console.log(data.toString())
+			console.log(data.toString());
 		});
 
 		clientImage.stderr.on('data', (err) => {
 			console.log('extract image error' + err.toString());
-			reject(err.toString())
+			reject(err.toString());
 		});
 		clientImage.on('close', async (res) => {
 			console.log('extract image end');
 			resolve(SUCCESS_STR);
-		})
-	})
+		});
+	});
 };
 
 function removeRepeatImage() {
@@ -80,7 +120,7 @@ function removeRepeatImage() {
 				reject('readdir error' + error);
 			}
 			data.forEach(item => {
-				if (item.includes('.jpg')|| item.includes('.png')) {
+				if (item.includes('.jpg') || item.includes('.png')) {
 					const imagePath = path.join(outputDir, item);
 					dirList.push(imagePath);
 				}
@@ -94,7 +134,7 @@ function removeRepeatImage() {
 
 				for (let i = 1; i < dirListTemp.length; i++) {
 					if (await ifSameImage(dirList[j], dirListTemp[i])) {
-						console.log('查到重复图片', dirListTemp[i])
+						console.log('查到重复图片', dirListTemp[i]);
 						//分离出重复图片的数字
 						const sameImgNum = getImgNum(dirListTemp[i]);
 						imgFlagMap.set(sameImgNum, path.basename(dirList[j]));
@@ -110,10 +150,10 @@ function removeRepeatImage() {
 				dirList = dirList.slice(0, j + 1).concat(tempList);
 			};
 
-			
+
 			resolve('remove finished');
-		})
-	})
+		});
+	});
 
 }
 //分离图片中标志数字
@@ -158,7 +198,7 @@ async function convertMTL() {
 					if (key === count) {
 						line = line.substring(0, start) + val;
 					}
-				})
+				});
 			};
 			fWrite.write(line + `\n`);
 		});
@@ -167,18 +207,19 @@ async function convertMTL() {
 			await fs.remove(mtlPath);
 			await fs.rename(newMtlPath, mtlPath);
 			console.log('readline close...');
-			resolve(SUCCESS_STR)
-		})
-	})
+			resolve(SUCCESS_STR);
+		});
+	});
 }
 
 //减面操作
-async function SimplifyModle(path){
-	const mesh = await load(path, { output: 'geometry'});
-	const targetFaceNum = 5000
+async function SimplifyModle(path) {
+	const mesh = await load(path, { output: 'geometry' });
+	const targetFaceNum = 5000;
 	const meshSimplified = mesh.simplify(targetFaceNum);
-	await save(path, meshSimplified, {format: 'stl'})
+	await save(path, meshSimplified, { format: 'stl' });
 }
 module.exports = {
-	exportModle
-}
+	exportModle,
+	exportNoImageModle
+};

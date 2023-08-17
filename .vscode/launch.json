@@ -7,13 +7,27 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "启动程序",
+            "name": "导出obj",
             "skipFiles": [
                 "<node_internals>/**"
             ],
             "args": [
-                "./input/gltf/newhouse524-3.gltf",
-                "./output/newhouse524-3/newhouse524-3.obj"
+                "./input/gltf/test.gltf",
+                "./output/test/test.obj"
+            ],
+            "program": "${workspaceFolder}\\index.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "导出无贴图obj",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "args": [
+                "./input/gltf/wallorigin-test.gltf",
+                "./output/wallorigin-noImage-test/wallorigin-noImage-test.obj",
+                "no-image"
             ],
             "program": "${workspaceFolder}\\index.js"
         }
