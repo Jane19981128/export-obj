@@ -3,11 +3,7 @@ const path = require('path');
 const { outputPath } = require('./src/constant');
 const { exportModle, exportNoImageModle } = require('./src/child_process');
 
-const flag = process.argv.at(-1);
-let input = process.argv.at(-2);
-if (flag === 'no-image') {
-    input = process.argv.at(-3);
-}
+const input = process.argv.at(-2);
 const basename = path.basename(input);
 
 (async () => {
@@ -25,6 +21,7 @@ const basename = path.basename(input);
         await fs.unlink(outputGLTFPath);
     await fs.writeFile(outputGLTFPath, JSON.stringify(json, null, 2));
 
+    const flag = process.argv.at(-3);
     if (flag === 'no-image') {
         await exportNoImageModle();
     }

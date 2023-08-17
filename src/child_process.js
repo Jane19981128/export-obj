@@ -6,19 +6,10 @@ var readline = require('readline');
 const { ifSameImage } = require('./del_repeat_img');
 const { assimpexePath, SUCCESS_STR } = require('./constant');
 
-const flag = process.argv.at(-1);
-let input = process.argv.at(-2);
-let output = process.argv.at(-1);
-if (flag === 'no-image') {
-	input = process.argv.at(-3);
-	output = process.argv.at(-2);
-}
-
 const { outputPath } = require('./constant');
-input = outputPath + path.basename(input);
+const input = outputPath + path.basename(process.argv.at(-2));
+const output = process.argv.at(-1);
 const outputDir = path.dirname(output);
-
-console.log(input, output);
 
 //重复图片对应关系
 const imgFlagMap = new Map();
